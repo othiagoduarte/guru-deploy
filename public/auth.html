@@ -1,0 +1,49 @@
+<!DOCTYPE html><html lang="en" ng-app="Auth" ng-controller="loginCtrl"><head><meta charset="utf-8"><meta http-equiv="X-UA-Compatible" content="IE=edge"><meta name="viewport" content="width=device-width, initial-scale=1"><title>Blur Admin</title><link href="https://fonts.googleapis.com/css?family=Roboto:400,100,100italic,300,300italic,400italic,500,500italic,700,700italic,900italic,900&subset=latin,greek,greek-ext,vietnamese,cyrillic-ext,latin-ext,cyrillic" rel="stylesheet" type="text/css"><link rel="icon" type="image/png" sizes="16x16" href="assets/img/guru.png"><link rel="icon" type="image/png" sizes="32x32" href="assets/img/guru.png"><link rel="icon" type="image/png" sizes="96x96" href="assets/img/guru.png"><link rel="stylesheet" href="styles/vendor-b5f7be7039.css"><link rel="stylesheet" href="styles/auth-0273c91b10.css"></head><body><main class="auth-main"><div class="auth-block"><h1 style="padding-bottom: opx;margin-bottom: 5px;">Bem vindo ao Guru!</h1><div style="text-align: center;"><p>Ferramenta Web para geranciar os processos do TCC</p></div><form class="form-horizontal"><div class="form-group"><label for="inputEmail3" class="col-sm-2 control-label">Email</label><div class="col-sm-10"><input type="email" class="form-control" ng-model="data.email" id="inputEmail3" placeholder="Email"></div></div><div class="form-group"><label for="inputPassword3" class="col-sm-2 control-label">Senha</label><div class="col-sm-10"><input type="password" ng-model="data.password" class="form-control" id="inputPassword3" placeholder="Password"></div></div><div class="form-group"><div class="col-sm-offset-2 col-sm-10"><button type="submit" ng-click="login()" class="btn btn-default btn-auth">Sign in</button></div></div></form></div></main></body><script src="scripts/vendor-49a95b3a49.js"></script><script>
+       'use strict';
+  /** @ngInject */
+var app = angular.module('Auth',[]);
+
+app.controller('loginCtrl', function($scope,$http,$window) {
+    
+    $window.sessionStorage.clear();
+    
+    $scope.login = login;
+    $scope.data = {};
+
+    function login(){
+        
+        //var url = "http://localhost:3008/login";
+        //https://guru-api-othiagoduarte.c9users.io/
+        //var url = "https://guru-api-othiagoduarte.c9users.io/login";
+        var url = "https://othiagoduarte.herokuapp.com/login";
+
+        if($scope.data && $scope.data.password != "" && $scope.data.email !="" ){      
+            $http.post(url, $scope.data)
+            .then(sucessoLogin)
+            .catch(erroLogin);
+        }
+    }
+    
+    function erroLogin(res){
+        console.log(res);
+        if(res.data.retorno){
+            alert(res.data.retorno);
+        }
+    }
+
+    function sucessoLogin(res){
+        
+        if(res.data.user._id){
+        
+            $window.sessionStorage.token = res.data.token ;
+            $window.sessionStorage.perfil = res.data.user.tipo;
+            $window.sessionStorage.user = res.data.user._id;
+            $window.sessionStorage.userData = JSON.stringify(res.data.userData);
+            $window.location.href ="/" ;
+
+        }else{
+
+        }
+    }
+});
+   </script></html>
