@@ -42,10 +42,9 @@ module.exports = function()
 	.then('routes')
 	.into(app);
 	
-app.listen(app.get('port'), function() {
-  console.log('Node app is running on port', app.get('port'));
-});
-
+	app.listen(app.get('port'), function() {
+	  console.log('Node app is running on port', app.get('port'));
+	});
 
 	return app;
 };
