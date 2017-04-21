@@ -15,7 +15,7 @@ app.controller('loginCtrl', function($scope,$http,$window) {
         //var url = "http://localhost:3008/login";
         //https://guru-api-othiagoduarte.c9users.io/
         //var url = "https://guru-api-othiagoduarte.c9users.io/login";
-        var url = "https://othiagoduarte.herokuapp.com/login";
+        var url = "https://guru-web.herokuapp.com/login";
 
         if($scope.data && $scope.data.password != "" && $scope.data.email !="" ){      
             $http.post(url, $scope.data)
