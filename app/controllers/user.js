@@ -72,7 +72,7 @@ module.exports = function(app)
                             });
                         }
                         
-                        if (_tipo == "PROFESSOR"){
+                        if (_tipo == "PROFESSOR" || _tipo == "COORDENADOR" ){
                         
                             Professor.findOne({"user._id":mongoose.Types.ObjectId(_id)})
                             .then(function(Professores){
