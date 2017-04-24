@@ -4,17 +4,12 @@ module.exports = function(app)
 	var Orientacao = app.models.orientacao;		
 	var controller = {};
 	
-	controller.getAll = getAll; /*BUSCAR TODOS*/ 
-	controller.get = get; 		/*BUSCAR POR ID*/
-	controller.save = save; /*ATUALIZAR POR ID*/
-	controller.add = add;  	/*INSERIR NOVO*/
+	controller.getAll = getAll; 
+	controller.get = get; 		
+	controller.save = save; 
+	controller.add = add;  	
 	controller.getByProfessor = getByProfessor;
 	controller.getByAluno = getByAluno;
-
-	function get (req, res) {	
-
-
-	};
  	
 	function getAll (req, res) {
 
@@ -71,6 +66,11 @@ module.exports = function(app)
 			res.status(200).json(orientacoes);
 		});
 	}
+	
+	function get (req, res) {	
+
+
+	};
 
 	return controller;	
 };
