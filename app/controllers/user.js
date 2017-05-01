@@ -47,7 +47,11 @@ module.exports = function(app)
             
         User.findOne(where)
     	.then(function(users){
-      	        
+            
+            var _user = users._doc;
+            var _tipo = users._doc.tipo;
+            var _id = users.id;
+            
       	    if(! users){
       		    res.status(401).json({retorno:"Usuario não encontrado"});
             }
@@ -55,10 +59,6 @@ module.exports = function(app)
             if(_user.password != req.body.password){
                 res.status(401).json({retorno:"Senha inválida"});
             }
-                
-            var _tipo = users._doc.tipo;
-            var _id = users.id;
-            var _user = users._doc;
 
             if (_tipo == "ALUNO"){
                 

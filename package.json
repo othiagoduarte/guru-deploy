@@ -2,9 +2,6 @@
   "name": "GuruWeb",
   "version": "0.0.1",
   "description": "Guru Web - Gerenciador de TCC",
-  "engines": {
-    "node": "6.10.2"
-  },
   "main": "server.js",
   "scripts": {
     "start": "node server.js"
