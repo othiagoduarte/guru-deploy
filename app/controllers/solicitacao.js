@@ -2,14 +2,17 @@ var mongoose = require('mongoose');
 module.exports = function(app)
 {
 	var Solicitacao = app.models.solicitacao;	
-	var Projeto = 	app.models.projeto;
-	var Aluno  = 	app.models.aluno;
+	var Projeto = app.models.projeto;
+	var Aluno = app.models.aluno;
+	var emailSolicitacao = app.lib.emailSolicitacao;
+
 	var controller = {};
 	
 	controller.getAll = getAll;  
 	controller.get = get; 		
 	controller.save = save; 
-	controller.add = add;  	
+	controller.add = add;
+	controller.validarNovaSolicitacao = validarNovaSolicitacao;  	
 	controller.getByProfessor = getByProfessor;
 	controller.getByAluno = getByAluno;
 	
@@ -38,8 +41,14 @@ module.exports = function(app)
 
 		Solicitacao.findOneAndUpdate(query,_solicitacao)
 		.then(function(solicitacoes) {
+
+			if(_solicitacao.status.cod == "R"){
+				emailSolicitacao.recusada(_solicitacao.aluno.user);				
+			}
 			
 			if(_solicitacao.status.cod == "A"){
+				
+				emailSolicitacao.aceita(_solicitacao.aluno.user);
 				
 				var query = {"aluno._id": _solicitacao.aluno._id}; 
 				var set = { "professor":_solicitacao.professor};
@@ -78,6 +87,7 @@ module.exports = function(app)
 
 		Solicitacao.create(_solicitacao)
 		.then(function(solicitacoes) {
+			emailSolicitacao.nova(_solicitacao.professor.user);
 			res.status(201).json(solicitacoes._doc);
 		},
 		function(erro) {
@@ -97,6 +107,7 @@ module.exports = function(app)
 	}
 	
 	function getByAluno(req, res){
+		
 		var _id = req.params.idAluno;
 		
 		Solicitacao.find({"aluno._id":_id})
@@ -104,6 +115,12 @@ module.exports = function(app)
 			res.status(200).json(professores);
 		});
 	}
-	
-	return controller;	
+
+	function validarNovaSolicitacao(req, res, next){
+
+		next();
+	}
+
+	return controller;
+
 };

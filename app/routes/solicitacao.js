@@ -8,7 +8,7 @@ module.exports = function(app)
 	
 	app.route('/solicitacao')
 	.get(auth, controller.getAll)
-	.post(auth ,controller.add)
+	.post(auth,controller.validarNovaSolicitacao, controller.add)
 	.put(auth ,controller.save);
 	
 	app.route('/solicitacao/ByAluno/:idAluno')

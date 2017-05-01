@@ -2,31 +2,24 @@ var mongoose = require('mongoose');
 
 module.exports = function(app)
 {
-	var Projeto = app.models.projeto;		
+	var Projeto = app.models.projeto;	
+	var _emailFeedback = app.lib.emailFeedback;	
 	var controller = {};
 	
-	controller.getAll = getAll;  
-	controller.get = get; 		
 	controller.save = save; 
 	controller.add = add;  	
 	controller.getByAluno = getByAluno;
 	controller.addEtapa = addEtapa;
 	controller.editarEtapa = editarEtapa;
 	controller.delEtapa = delEtapa;
+	controller.emailFeedback = emailFeedback;
 
-	function get (req, res) {	
+	function emailFeedback(req, res, next){
+		var _projeto = req.body.projeto;
+		_emailFeedback.novo(req.body.projeto.aluno.user);
+		next();
+	}
 
-
-	};
- 	
-	function getAll (req, res) {
-
-		Projeto.find().exec()
-		.then(function(projetos){
-			res.json(projetos);
-		});			
-	};
-	
 	function save(req, res){
 		
 		var _projeto = req.body;

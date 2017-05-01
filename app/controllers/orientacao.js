@@ -1,7 +1,9 @@
 var mongoose = require('mongoose');
 module.exports = function(app)
 {
-	var Orientacao = app.models.orientacao;		
+	var Orientacao = app.models.orientacao;	
+	var emailAgendamento = app.lib.emailAgendamento;	
+		
 	var controller = {};
 	
 	controller.getAll = getAll; 
@@ -25,9 +27,20 @@ module.exports = function(app)
 		var _orientacao = req.body;
 		var query = {"_id":_orientacao._id};
 
-		Orientacao.findOneAndUpdate(query,_orientacao)
+		Orientacao.findOneAndUpdate(query,_orientacao,{ upsert: true, new: true })
 		.then(function(orientacoes) {
-			res.status(200).json(orientacoes._doc);
+			
+			var _orientacao = orientacoes._doc;
+
+			if(_orientacao.status.cod == "C"){
+				emailAgendamento.aceito(_orientacao.aluno.user);
+			}
+			
+			if(_orientacao.status.cod == "R"){
+				emailAgendamento.recusado(_orientacao.aluno.user);
+			}
+			
+			res.status(200).json(_orientacao);
 		},
 		function(erro) {
 			console.log(erro);
@@ -40,6 +53,7 @@ module.exports = function(app)
 
 		Orientacao.create(_orientacao)
 		.then(function(orientacoes) {
+			emailAgendamento.novo(orientacoes._doc.aluno.user);
 			res.status(201).json(orientacoes._doc);
 		},
 		function(erro) {

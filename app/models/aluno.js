@@ -19,6 +19,6 @@ module.exports = function() {
         },
         orientador:{}
     });
-
+    
     return mongoose.model('Alunos', schema);
 };

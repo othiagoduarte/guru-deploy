@@ -7,10 +7,12 @@ module.exports = function() {
         aluno:{
             _id:{type: String},
             nome:{type: String},
+            user:{},
         },
         professor:{            
             _id:{type: String},
             nome:{type: String},
+            user:{},
         },
         envio:{ type: Date, default: Date.now },
         data:{ type: Date },

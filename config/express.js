@@ -37,6 +37,7 @@ module.exports = function()
 	});
 
 	load('models',{cwd: 'app'})
+	.then('lib')
 	.then('controllers')
 	.then('routes')
 	.into(app);
