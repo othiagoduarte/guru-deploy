@@ -14,9 +14,10 @@ module.exports = function()
 	
 	app.set('host',process.env.IP || "127.0.0.1");
 	app.set('port',process.env.PORT || 3008);
-	app.use(express.static('./public'));
-	app.use(express.static(__dirname + '/public'));
-
+	
+	app.use('/',express.static('./public'));
+	app.use('/download', express.static('download'));
+	
 	app.set('view engine','ejs');
 	app.set('views','./app/views');
 	
@@ -32,7 +33,8 @@ module.exports = function()
 	app.use(function(req, res, next){
 	  res.header("Access-Control-Allow-Origin", "*");
 	  res.header('Access-Control-Allow-Methods', 'GET, PUT, POST, DELETE, OPTIONS');
-      res.header('Access-Control-Allow-Headers', 'Origin, Content-Type, Accept, Authorization, authorization');
+      res.header('Access-Control-Allow-Headers', 'Origin, Content-Type, Accept, Authorization, authorization, X-Requested-With');
+	  
   	  next();   
 	});
 

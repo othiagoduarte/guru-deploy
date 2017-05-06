@@ -27,6 +27,7 @@ module.exports = function() {
         professor:{            
             _id:{type: String},
             nome:{type: String},
+            user:{}
         },
         etapas:[{    
                      titulo: {type: String,required: true},
