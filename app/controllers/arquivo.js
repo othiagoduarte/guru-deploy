@@ -17,7 +17,7 @@ module.exports = function(app)
 		var _etapa = req.body.etapa;
 		var _file = req.file;
 		var _dirOrigin = _file.path;
-		var _dirDestino = "download\\alunos\\etapas\\" + _etapa + _file.originalname.substring(_file.originalname.length - 4, _file.originalname.length);
+		var _dirDestino = ".\\download\\alunos\\etapas\\" + _etapa + _file.originalname.substring(_file.originalname.length - 4, _file.originalname.length);
 		
 		copyFile.copy(_dirOrigin, _dirDestino,function(err){
 			console.log(err);
