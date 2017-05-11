@@ -18,28 +18,34 @@ module.exports = function(app)
 		var _file = req.file;
 		var _dirOrigin = _file.path;
 		var _dirDestino = ".\\download\\alunos\\etapas\\" + _etapa + _file.originalname.substring(_file.originalname.length - 4, _file.originalname.length);
-		
-		copyFile.copy(_dirOrigin, _dirDestino,function(err){
-			console.log(err);
-		});
-		
+	
 		var query = {"_id": mongoose.Types.ObjectId(_projeto), "etapas._id" :mongoose.Types.ObjectId(_etapa)};
 		
-		Projeto.findOneAndUpdate(query, {'etapas.$.entrega': {url: _dirDestino}},{ upsert: true, new: true })
-		.then(function(projetos) {
-			
-			if(projetos){
-				res.status(200).json(projetos._doc);
-				emailEntregaEtapa.nova(projetos._doc.professor.user);				
-			}else{
-				res.status(501).json({mensagem:"Erro ao subir o arquivo!"});
-				console.log(erro);
+		copyFile.copy(_dirOrigin, _dirDestino, function(err){
+
+			if(err){
+				res.status(501).json({mensagem:"Erro ao subir o arquivo!",erro:err});
 			}
-		},
-		function(erro) {
-			res.status(501).json(erro);
-			console.log(erro);
-		});	
+
+			Projeto.findOneAndUpdate(query, {'etapas.$.entrega': {url: _dirDestino}},{ upsert: true, new: true })
+			.then(function(projetos) {
+				
+				if(projetos){
+
+					res.status(200).json(projetos._doc);
+					emailEntregaEtapa.nova(projetos._doc.professor.user);				
+				}else{
+					res.status(501).json({mensagem:"Erro ao subir o arquivo!"});
+					console.log(erro);
+				}
+			},
+			function(erro) {
+				res.status(501).json(erro);
+				console.log(erro);
+			});	
+
+		});
+
 	};
 
 	return controller;	
