@@ -31,7 +31,6 @@ module.exports = function(app)
 			.then(function(projetos) {
 				
 				if(projetos){
-
 					res.status(200).json(projetos._doc);
 					emailEntregaEtapa.nova(projetos._doc.professor.user);				
 				}else{

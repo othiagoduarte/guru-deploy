@@ -8,4 +8,7 @@ module.exports = function (app)
 
     app.route("/user/:id")
     .get(controller.getById);
+
+    app.route("/user/recuperar")
+    .post(controller.recuperarSenha)
 };

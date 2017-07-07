@@ -1,17 +1,20 @@
 var jwt = require("jwt-simple");
 var cfg = { jwtSecret: "secret",jwtSession: {session: true}};
-var mongoose = require('mongoose');            
+var mongoose = require('mongoose');     
+var _ = require('underscore');       
 module.exports = function(app)
 {
 	var User = app.models.user;		
     var Aluno = app.models.aluno;		
-    var Professor = app.models.professor;		
+    var Professor = app.models.professor;
+    var _emailRecuperacaoSenha = app.lib.emailRecuperacaoSenha;			
     
 	var controller = {};
 
     controller.login = login;
     controller.getById = getById;
-    
+    controller.recuperarSenha = recuperarSenha;
+
     function getById(req, res){
         
         if (req.params.id) {
@@ -101,6 +104,30 @@ module.exports = function(app)
       		},function(erro){
       			res.status(401).json({retorno:erro});
       		});
+    }
+
+    function recuperarSenha(req, res){
+        var where = {};
+        if(!req.body.cpf && !req.body.email) {
+            res.status(401).json({retorno:"Dados inválidos!"});
+            return ;
+        }
+        if(req.body.email)  where.email = req.body.email; 
+        if(req.body.cpf)  where.cpf = req.body.cpf; 
+        
+        User.findOne(where)
+    	.then(function(users){
+            if(! users){
+      		    res.status(401).json({retorno:"Usuario não encontrado"});
+                return ;
+            }
+            
+            _emailRecuperacaoSenha.enviar(users._doc.email, users._doc.password);
+
+            res.status(200).json({retorno:"Sua senha foi enviada para o e-mail cadastrado!"});
+        },function(erro){
+            res.status(401).json({retorno:erro});
+        });
     }
     
     return controller;
