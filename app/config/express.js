@@ -1,21 +1,22 @@
-import express from 'express';
-import load from 'express-load';
-import bodyParser from 'body-parser';
-import cookieParser from 'cookie-parser';
-import passport from 'passport';
-import expressSession from 'express-session';
-import auth from './auth.js';
-export default ( () => {
-
+var express = require('express');
+var load = require('express-load');
+var bodyParser = require('body-parser');
+var cookieParser = require('cookie-parser');
+var passport = require('passport');
+var expressSession = require('express-session');
+var auth = require('./auth.js');
+module.exports = function()
+{
 	var app = express();
-
+	
+		
 	app.passportGuru = auth(app);
 	
 	app.set('host',process.env.IP || "127.0.0.1");
 	app.set('port',process.env.PORT || 3008);
 	
-	app.use('/',express.static('./public'));
-	app.use('/download', express.static('download'));
+	app.use('/',express.static('../api/public'));
+	app.use('/download', express.static('../app/download'));
 	
 	app.set('view engine','ejs');
 	app.set('views','./app/views');
@@ -49,4 +50,4 @@ export default ( () => {
 	});
 
 	return app;
-})();
+};

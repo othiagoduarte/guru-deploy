@@ -1,2 +1,2 @@
-import dataBase from './config/database.js';
-import express from './config/express';
+require('./app/config/database.js')('mongodb://localhost/gurudb');
+require('./app/config/express')();

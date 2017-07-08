@@ -4,9 +4,7 @@
   "description": "Guru Web - Gerenciador de TCC",
   "main": "server.js",
   "scripts": {
-    "start": "babel-node server.js",
-    "babel": "babel-node server.js",
-    "babel-debug": "nodemon --exec babel-node server.js --debug"
+    "start": "node server.js"
   },
   "dependencies": {
     "bcrypt-nodejs": "0.0.3",
@@ -39,9 +37,5 @@
     "heroku",
     "express"
   ],
-  "license": "MIT",
-  "devDependencies": {
-    "babel-cli": "^6.24.1",
-    "babel-preset-latest": "^6.24.1"
-  }
+  "license": "MIT"
 }

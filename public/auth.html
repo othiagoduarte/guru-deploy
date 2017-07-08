@@ -13,7 +13,7 @@ app.controller('loginCtrl', function($scope,$http,$window) {
     function login(){
         
         var url = "http://localhost:3008/";
-        url = "https://guru-web.herokuapp.com/";
+      //  url = "https://guru-web.herokuapp.com/";
 
         if($scope.data && $scope.data.password != "" && $scope.data.email !="" ){      
             $http.post(url + "login", $scope.data)
@@ -23,22 +23,18 @@ app.controller('loginCtrl', function($scope,$http,$window) {
     }
     
     function erroLogin(res){
-        console.log(res);
         if(res.data.retorno){
             alert(res.data.retorno);
         }
     }
 
     function sucessoLogin(res){
-        
         if(res.data.user._id){        
             $window.sessionStorage.token = res.data.token ;
             $window.sessionStorage.perfil = res.data.user.tipo;
             $window.sessionStorage.user = res.data.user._id;
             $window.sessionStorage.userData = JSON.stringify(res.data.userData);
             $window.location.href ="/" ;
-        }else{
-
         }
     }
 });

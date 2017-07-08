@@ -8,7 +8,7 @@ var params = {
   jwtFromRequest: ExtractJwt.fromAuthHeader()
 };
 
-var User = require('../app/models/user.js')();
+var User = require('../models/user.js')();
   
 module.exports = function(app) {
   

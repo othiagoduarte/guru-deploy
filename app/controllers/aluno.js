@@ -7,11 +7,11 @@ module.exports = function(app)
 		
 	var controller = {};
 	
-	controller.getAll = getAll; /*BUSCAR TODOS*/ 
-	controller.get = get; 		/*BUSCAR POR ID*/
-	controller.save = save; /*ATUALIZAR POR ID*/
-	controller.add = add;  	/*INSERIR NOVO*/
-	controller.getByMatricula = getByMatricula;	/*BUSCAR PELA MATRICULA*/
+	controller.getAll = getAll;  
+	controller.get = get; 		
+	controller.save = save; 
+	controller.add = add;  	
+	controller.getByMatricula = getByMatricula;	
 	controller.getByUser = getByUser;
 	controller.getByOrientando = getByOrientando;
 	
