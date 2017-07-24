@@ -1,55 +1,37 @@
 module.exports = function(app)
 {
-	var Comunicado = app.models.comunicado;		
-	var controller = {};
+	const ComunicadoBd = app.models.comunicado;		
+	const R = app.builder.retorno;
+
+	async function getAll (req, res) {
+		try {
+			const retorno = await ComunicadoBd.find({});
+			return R.sucesso(retorno);			
+		} catch (error) {
+			return R.erroServidor(error);	
+		}			
+	}
 	
-	controller.getAll = getAll;  
-	controller.get = get; 		
-	controller.save = save; 
-	controller.add = add;  	
-
-	function get (req, res) {	
-
-
-	};
- 	
-	function getAll (req, res) {
-
-		Comunicado.find().exec()
-		.then(function(comunicados){
-			res.json(comunicados);
-		});
-			
-	};
-	
-	function save(req, res){
-
-		var _comunicado = req.body;
-		var query = {"_id":_comunicado._id};
-
-		Comunicado.findOneAndUpdate(query,_comunicado,{ upsert: true, new: true })
-		.then(function(orientacoes) {
-			res.status(200).json(_comunicado);
-		},
-		function(erro) {
-			res.status(501).json({mensagem:"Erro ao salvar comunicado!"});
-			console.log(erro);
-		});	
-	};
-
-	function add(req, res){
-		var _comunicado = req.body;
-
-		Comunicado.create(_comunicado)
-		.then(function(comunicados) {
-			/**Enviar e-mail de aviso!*/
-			res.status(201).json(comunicados._doc);
-		},
-		function(erro) {
-			console.log(erro);
-			res.status(501).json(erro.message);
-		});
+	async function save(req, res){
+		try {
+			const comunicado = req.body;
+			const query = {"_id":comunicado._id};
+			return retorno = await ComunicadoBd.findOneAndUpdate(query, comunicado,{ upsert: true, new: true });
+		} catch (error) {
+			return R.erroServidor(error);				
+		}
 	}
 
-	return controller;	
-};
+	async function add(req, res){
+		try {
+			const comunicado = req.body;
+			const retorno = await ComunicadoBd.create(comunicado);
+			return R.sucesso(retorno);
+			/**Enviar e-mail de aviso!*/			
+		} catch (error) {
+			return R.erroServidor(error);							
+		}
+	}
+
+	return { getAll, save, add}  
+}

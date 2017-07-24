@@ -1,23 +1,25 @@
 module.exports = function(app)
 {
-	var controller = app.controllers.aluno;
-	var auth = app.passportGuru.authenticate();
+	const ctrl = app.controllers.aluno;
+	const auth = app.passportGuru.authenticate();
 		
-	app.route('/aluno/:id')
-	.get(auth, controller.get);
-	
-	app.route('/aluno/getByUser/:user')
-	.get(auth, controller.getByUser);
-	
-	app.route('/aluno/byMatricula/:matricula')
-	.get(auth, controller.getByMatricula);
-	
-	app.route('/aluno/byOrientando/:idProfessor')
-	.get(auth, controller.getByOrientando);
-	
-	app.route('/aluno')
-	.get(auth, controller.getAll)
-	.post(auth, controller.add)
-	.put(auth, controller.save);
+	app.get('/aluno', async (req, res)=>{
+		 const R = await ctrl.getAll(req, res);
+		 res.status(R.status).jsonp(R.data);
+	});
 
+	app.get('/aluno/getByUser/:user', async (req, res)=>{
+		 const R = await ctrl.getByUser(req, res);
+		 res.status(R.status).jsonp(R.data);
+	});
+
+	app.get('/aluno/byMatricula/:matricula', async (req, res)=>{
+		 const R = await ctrl.getByMatricula(req, res);
+		 res.status(R.status).jsonp(R.data);
+	});
+
+	app.get('/aluno/byOrientando/:idProfessor', async (req, res)=>{
+		 const R = await ctrl.getByOrientando(req, res);
+		 res.status(R.status).jsonp(R.data);
+	});
 };

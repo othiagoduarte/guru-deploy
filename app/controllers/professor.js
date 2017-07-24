@@ -1,75 +1,59 @@
-var mongoose = require('mongoose');
+const mongoose = require('mongoose');
 module.exports = function(app)
 {
-	var Professor = app.models.professor;		
-	var controller = {};
+	const ProfessorBd = app.models.professor;		
+	const R = app.builder.retorno;
+
+	async function getByUser (req, res) {	
+		try {
+			const where = {"user._id": mongoose.Types.ObjectId(req.params.user)};
+			const retorno = await  ProfessorBd.findOne(where);
+			if(!retorno){
+				return R.naoEncontrado("Professor não encontrado!");	
+			} 
+			return R.sucesso(retorno); 	
+		} catch (error) {
+			return R.erroServidor(error);
+		}
+	}
 	
-	controller.getAll = getAll; /*BUSCAR TODOS*/ 
-	controller.get = get; 		/*BUSCAR POR ID*/
-	controller.save = save; /*ATUALIZAR POR ID*/
-	controller.add = add;  	/*INSERIR NOVO*/
-	controller.getByUser = getByUser;
-	
-	function getByUser (req, res) {	
-		
-		var _user = req.params.user;
-		var where = {"user._id": mongoose.Types.ObjectId(_user)};
-
-		Professor.findOne(where)
-		.then(function(professores){
-			if(professores){
-				res.status(200).jsonp(professores);
-			}else{
-				res.status(404).json({retorno:"Não encontrado"});
-			}
-
-		},function(erro){
-			res.status(404).json(erro);
-		});
-
-	};
-	
-	function get (req, res) {	
-		
-		var _id = req.params.id;
-
-		Professor.findOne({"_id":_id})
-		.then(function(professores){
-			res.status(200).json(professores);
-		});
-
-	};
+	async function get (req, res) {	
+		try {
+			const retorno = await ProfessorBd.findOne({"_id":req.params.id});
+			return R.sucesso(retorno);
+		} catch (error) {
+			return R.erroServidor(error);			
+		}
+	}
  	
-	function getAll (req, res) {
-
-		Professor.find().exec()
-		.then(function(professores){
-			res.status(200).json(professores);
-		});
-			
-	};
+	async function getAll (req, res) {
+		try {
+			const retorno = await ProfessorBd.find();
+			return R.sucesso(retorno);
+		} catch (error) {
+			return R.erroServidor(error);						
+		}
+	}
 	
-	function save(req, res){
-
-	};
-
-	function add(req, res){
-		
-		var _professor = req.body;
-
-		Professor.create(_professor)
-		.then(function(Professors) {
-			res.status(201).json(Professors._doc);
-		},
-		function(erro) {
-			console.log(erro);
-		});
-
+	async function save(req, res){
+		try {
+			const professor = req.body;
+			const retorno = await ProfessorBd.create(professor);
+			return R.sucesso(retorno);
+		} catch (error) {
+			return R.erroServidor(error);									
+		}
 	}
 
-	function getAllSkills(){
-
+	async function add(req, res){
+		try {
+			const professor = req.body;
+			const retorno = await ProfessorBd.create(professor);
+			return R.sucesso(retorno);
+		} catch (error) {
+			return R.erroServidor(error);									
+		}
 	}
 
-	return controller;	
+	return {getAll, get, save, add, getByUser}
 };

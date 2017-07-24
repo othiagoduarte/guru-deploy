@@ -1,8 +1,7 @@
 var mongoose = require('mongoose');
 
 module.exports = function() {
-
-    var schema = mongoose.Schema({  
+    return mongoose.model('Alunos', mongoose.Schema({  
         nome: {
             type: String,
             required: true
@@ -18,7 +17,5 @@ module.exports = function() {
             type: {}
         },
         orientador:{}
-    });
-    
-    return mongoose.model('Alunos', schema);
+    }));
 };

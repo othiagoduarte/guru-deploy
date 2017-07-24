@@ -4,7 +4,10 @@
   "description": "Guru Web - Gerenciador de TCC",
   "main": "server.js",
   "scripts": {
-    "start": "node server.js"
+    "start": "npm install && babel app -d app-compiled && node server.js",
+    "dev": "npm install && babel app -d app-compiled && nodemon server.js",    
+    "build": "npm install && babel app -d app-compiled ",
+    "lint": "eslint server.js"
   },
   "dependencies": {
     "bcrypt-nodejs": "0.0.3",
@@ -37,5 +40,21 @@
     "heroku",
     "express"
   ],
-  "license": "MIT"
+  "license": "MIT",
+  "devDependencies": {
+    "babel": "^6.23.0",
+    "babel-cli": "^6.24.1",
+    "babel-core": "^6.24.0",
+    "babel-loader": "^6.4.1",
+    "babel-plugin-transform-async-to-module-method": "^6.16.0",
+    "babel-preset-env": "^1.6.0",
+    "babel-preset-es2015": "^6.18.0",
+    "babel-preset-stage-2": "^6.18.0",
+    "babel-root-slash-import": "^1.1.0",
+    "http-server": "^0.10.0",
+    "webpack": "^3.1.0",
+    "babel-eslint": "^4.0.10",
+    "eslint": "^1.1.0",
+    "nodemon": "^1.4.1"
+  }
 }

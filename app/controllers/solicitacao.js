@@ -1,126 +1,71 @@
-var mongoose = require('mongoose');
+const mongoose = require('mongoose');
 module.exports = function(app)
 {
-	var Solicitacao = app.models.solicitacao;	
-	var Projeto = app.models.projeto;
-	var Aluno = app.models.aluno;
-	var emailSolicitacao = app.lib.emailSolicitacao;
-
-	var controller = {};
+	const SolicitacaoBd = app.models.solicitacao;	
+	const ProjetoBd = app.models.projeto;
+	const AlunoBd = app.models.aluno;
+	const emailSolicitacao = app.lib.emailSolicitacao;
+	const R = app.builder.retorno;
 	
-	controller.getAll = getAll;  
-	controller.get = get; 		
-	controller.save = save; 
-	controller.add = add;
-	controller.validarNovaSolicitacao = validarNovaSolicitacao;  	
-	controller.getByProfessor = getByProfessor;
-	controller.getByAluno = getByAluno;
-	
-	function get (req, res) {	
+	async function save(req, res){
+		try {
+			let _solicitacao = req.body;
+			let query = {"_id":_solicitacao._id};
 
-		Solicitacao.find().exec()
-		.then(function(data){
-			res.json(data);
-		});
-
-	};
- 	
-	function getAll (req, res) {
-
-		Solicitacao.find().exec()
-		.then(function(data){
-			res.json(data);
-		});
-			
-	};
-	
-	function save(req, res){
-		
-		var _solicitacao = req.body;
-		var query = {"_id":_solicitacao._id};
-
-		Solicitacao.findOneAndUpdate(query,_solicitacao)
-		.then(function(solicitacoes) {
+			const solicitacao = await SolicitacaoBd.findOneAndUpdate(query, _solicitacao);
 
 			if(_solicitacao.status.cod == "R"){
 				emailSolicitacao.recusada(_solicitacao.aluno.user);				
 			}
-			
-			if(_solicitacao.status.cod == "A"){
 				
+			if(_solicitacao.status.cod == "A"){
 				emailSolicitacao.aceita(_solicitacao.aluno.user);
 				
-				var query = {"aluno._id": _solicitacao.aluno._id}; 
-				var set = { "professor":_solicitacao.professor};
+				query = {"aluno._id": _solicitacao.aluno._id}; 
+				set = { "professor":_solicitacao.professor};
 
-				Projeto.findOneAndUpdate(query,{$set:set})
-				.then(function(Projetos){
-					
-					var query = {"_id": mongoose.Types.ObjectId(_solicitacao.aluno._id)}; 
-					var set = { "orientador":_solicitacao.professor};
-					
-					Aluno.findOneAndUpdate(query,{$set:set})
-					.then(function(alunos){
-						res.status(200).json(solicitacoes._doc);
-					},function(error){
-						res.status(501).json(error,solicitacoes._doc);						
-					});
+				await ProjetoBd.findOneAndUpdate(query,{$set:set});
+		
+				query = {"_id": mongoose.Types.ObjectId(_solicitacao.aluno._id)}; 
+				set = { "orientador":_solicitacao.professor};
+				
+				await AlunoBd.findOneAndUpdate(query,{$set:set});
 
-				},function(error){
-					res.status(501).json(error,solicitacoes._doc);										
-				});
-
-			}else{
-				res.status(200).json(solicitacoes._doc);
+				return R.sucesso(solicitacao);		
 			}
-
-		},
-		function(erro) {
-			console.log(erro);
-			res.status(501).json(erro.message);
-		});
+		} catch (error) {
+			R.erroServidor(error);
+		}
 	};
 
-	function add(req, res){
-		
-		var _solicitacao = req.body;
-
-		Solicitacao.create(_solicitacao)
-		.then(function(solicitacoes) {
-			emailSolicitacao.nova(_solicitacao.professor.user);
-			res.status(201).json(solicitacoes._doc);
-		},
-		function(erro) {
-			console.log(erro);
-			res.status(501).json(erro.message);
-		});
+	async function add(req, res){
+		try {
+			const solicitacao = req.body;
+			const retorno = await SolicitacaoBd.create(solicitacao);
+			emailSolicitacao.nova(retorno.professor.user);	
+			return R.sucesso(retorno);		
+		} catch (error) {
+			return R.erroServidor(error);			
+		}
 	}
 
-	function getByProfessor(req, res){
-		
-		var _id = req.params.idProfessor;
-
-		Solicitacao.find({"professor._id":_id})
-		.then(function(professores){
-			res.status(200).json(professores);
-		});
+	async function getByProfessor(req, res){
+		try {
+			const solicitacoes =  await SolicitacaoBd.find({"professor._id":req.params.idProfessor})
+			return R.sucesso(solicitacoes);	
+		} catch (error) {
+			return R.erroServidor(error);
+		}
 	}
 	
-	function getByAluno(req, res){
-		
-		var _id = req.params.idAluno;
-		
-		Solicitacao.find({"aluno._id":_id})
-		.then(function(professores){
-			res.status(200).json(professores);
-		});
+	async function getByAluno(req, res){
+		try {
+			const solicitacoes =  await SolicitacaoBd.find({"aluno._id":req.params.idAluno})
+			return R.sucesso(solicitacoes);	
+		} catch (error) {
+			return R.erroServidor(error);
+		}
 	}
 
-	function validarNovaSolicitacao(req, res, next){
-
-		next();
-	}
-
-	return controller;
-
+	return {add, save, getByAluno, getByProfessor, }
 };

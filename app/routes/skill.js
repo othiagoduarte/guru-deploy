@@ -1,13 +1,21 @@
 module.exports = function(app)
 {
-	var auth = app.passportGuru.authenticate();
-	var controller = app.controllers.skill;
+	const auth = app.passportGuru.authenticate;
+	const ctrl = app.controllers.skill;
 	
-	app.route('/skill')
-	.get(auth, controller.getAll)
-	.post(auth, controller.add)
-	.put(auth, controller.save);
+	app.get('/skill', async (req, res)=>{
+		 const R = await ctrl.getAll(req, res);
+		 res.status(R.status).jsonp(R.data);
+	});
 
-	app.route('/skill/:id')
-	.get(auth, controller.get);
+	app.post('/skill', async (req, res)=>{
+		 const R = await ctrl.add(req, res);
+		 res.status(R.status).jsonp(R.data);
+	});
+
+	app.put('/skill', async (req, res)=>{
+		 const R = await ctrl.save(req, res);
+		 res.status(R.status).jsonp(R.data);
+	});
+
 };

@@ -1,19 +1,27 @@
 module.exports = function(app)
 {
-	var controller = app.controllers.orientacao;
-	var auth = app.passportGuru.authenticate();
+	const ctrl = app.controllers.orientacao;
+	const auth = app.passportGuru.authenticate();
 	
-	app.route('/orientacao/:id')
-	.get(auth, controller.get);
+	app.post("/orientacao", async (req, res) =>{
+        const R = await ctrl.add(req, res);
+        res.status(R.status).jsonp(R.data);
+    });
 	
-	app.route('/orientacao')
-	.get(auth, controller.getAll)
-	.post(auth, controller.add)
-	.put(auth, controller.save);
+	app.put("/orientacao", async (req, res) =>{
+        const R = await ctrl.save(req, res);
+        res.status(R.status).jsonp(R.data);
+    });
+	
+	app.get('/orientacao/ByAluno/:idAluno', async (req, res) =>{
+        const R = await ctrl.getByAluno(req, res);
+        res.status(R.status).jsonp(R.data);
+    });
 
-	app.route('/orientacao/ByAluno/:idAluno')
-	.get(auth, controller.getByAluno);
+	app.get('/orientacao/ByProfessor/:idProfessor', async (req, res) =>{
+        const R = await ctrl.getByProfessor(req, res);
+        console.log(R)
+        res.status(R.status).jsonp(R.data);
+    });
 
-	app.route('/orientacao/ByProfessor/:idProfessor')
-	.get(auth, controller.getByProfessor);
 };

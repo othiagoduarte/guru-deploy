@@ -11,7 +11,7 @@ app.controller('loginCtrl', function($scope,$http,$window) {
     function recuperar(){
         var url = "http://localhost:3008/";
         url = "https://guru-web.herokuapp.com/";
-        url = "http://guruweb-college.umbler.net/";
+     //   url = "http://guruweb-college.umbler.net/";
         if($scope.data && $scope.data.email != "" || $scope.data.cpf !="" ){      
             $http.post(url + "user/recuperar", $scope.data)
             .then(sucessoRecuperar)

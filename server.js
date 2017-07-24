@@ -1,2 +1,2 @@
-require('./app/config/database.js')('mongodb://localhost/gurudb');
-require('./app/config/express')();
+require('./app-compiled/config/database.js')('mongodb://localhost/gurudb');
+require('./app-compiled/config/express')();

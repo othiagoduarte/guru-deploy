@@ -1,135 +1,104 @@
-var jwt = require("jwt-simple");
-var cfg = { jwtSecret: "secret",jwtSession: {session: true}};
-var mongoose = require('mongoose');     
-var _ = require('underscore');       
+const _ = require('underscore');       
+const mongoose = require('mongoose');     
+const jwt = require("jwt-simple");
+const cfg = { jwtSecret: "secret",jwtSession: {session: true}};
 module.exports = function(app)
 {
-	var User = app.models.user;		
-    var Aluno = app.models.aluno;		
-    var Professor = app.models.professor;
-    var _emailRecuperacaoSenha = app.lib.emailRecuperacaoSenha;			
-    
-	var controller = {};
+    const UserBd = app.models.user;		
+    const AlunoBd = app.models.aluno;		
+    const ProfessorBd = app.models.professor;
+    const emailRecuperacaoSenha = app.lib.emailRecuperacaoSenha;	
+    const R = app.builder.retorno;
 
-    controller.login = login;
-    controller.getById = getById;
-    controller.recuperarSenha = recuperarSenha;
-
-    function getById(req, res){
+    async function getById(req, res){
         
-        if (req.params.id) {
-            var _id = req.params.id;
-            var where = {_id:_id}
-          
-            User.findOne(where)
-    	    .then(function(users){
-      	        
-      	        if(users){
-      			    res.json({user: users});
-      				
-      			}else{
-      				res.status(404).json({retorno:"Usuario não encontrado"});
-      			}
-    
-      		},function(erro){
-      			res.status(404).json({retorno:erro});
-      		});
-    
-        } else {
-            res.sendStatus(404);
+        if (!req.params.id) {
+            return R.naoEncontrado("Usuario não encontrado!");
         }
+        const where = {_id:req.params.id};
+        const user = await UserBd.findOne(where);
+
+        if(!user){
+           return  R.naoEncontrado("Usuario não encontrado!");
+        }
+        return R.sucesso(user);    	 
     }
-
-    function login (req, res) {
-
-        if (! ( req.body.email || req.body.password)) {
-            res.sendStatus(401);
-        }
-            
-        var where = {"email" : req.body.email};
-            
-        User.findOne(where)
-    	.then(function(users){
-            
-            var _user = users._doc;
-            var _tipo = users._doc.tipo;
-            var _id = users.id;
-            
-      	    if(! users){
-      		    res.status(401).json({retorno:"Usuario não encontrado"});
-            }
-                
-            if(_user.password != req.body.password){
-                res.status(401).json({retorno:"Senha inválida"});
+    
+    async function login (req, res) {
+        try {
+            if (validarParametrosLogin(req)) {
+                return R.naoAutorizado("Parametros inválidos"); 
             }
 
-            if (_tipo == "ALUNO"){
-                
-                Aluno.findOne({"user._id":mongoose.Types.ObjectId(_id)})
-                .then(function(alunos){
-                    
-                    if(alunos){
-                        var payload = {id: _user.id};
-                        var token = jwt.encode(payload, cfg.jwtSecret);
-                        res.json({token: token, user: _user, userData:alunos._doc});
-                    }
-                    else{
-                            res.status(401).json({retorno:"Dados do Usuario não encontrado"});
-                        }
-                    }
-                    , function(error){
-                        res.status(401).json({retorno:"Dados do Usuario não encontrado"});
-                    });
-                }
-                    
-                if (_tipo == "PROFESSOR" || _tipo == "COORDENADOR" ){
-                    
-                    Professor.findOne({"user._id":mongoose.Types.ObjectId(_id)})
-                    .then(function(Professores){
-                        
-                        if(Professores){
-                            var payload = {id: users.id};
-                            var token = jwt.encode(payload, cfg.jwtSecret);
-                            res.json({token: token, user: users, userData:Professores._doc});
-                        }
-                        else{
-                            res.status(401).json({retorno:"Dados do Usuario não encontrado"});
-                        }
-                    }
-                    , function(error){
-                        res.status(401).json({retorno:"Dados do Usuario não encontrado"});
-                    });
-                }
-    
-      		},function(erro){
-      			res.status(401).json({retorno:erro});
-      		});
-    }
+            let user = null;
+            let userData = null;
+            
+            user = await UserBd.findOne({"email" : req.body.email});
 
-    function recuperarSenha(req, res){
-        var where = {};
+            if(! validarUsuario(user, req.body.password)){
+                return R.naoAutorizado("e-mail ou senha inválido");
+            } 
+            if (ehProfessor(user)){
+                userData = await ProfessorBd.findOne({"user._id": mongoose.Types.ObjectId(user._id)});
+            }else if(ehAluno(user)){
+                userData = await AlunoBd.findOne({"user._id":mongoose.Types.ObjectId(user._id)});
+            }else{
+                return R.naoAutorizado("Usuario inválido, contate o admininstrador!");
+            }
+            return R.sucesso(builderAutenticacao(user, userData));
+        }
+        catch(error){
+            return R.erroServidor(error);
+        }        
+  }
+
+    async function recuperarSenha(req, res){
+        const where = {};
+        let user = null;
+
         if(!req.body.cpf && !req.body.email) {
-            res.status(401).json({retorno:"Dados inválidos!"});
-            return ;
+            return R.naoAutorizado("Parametros inválidos"); 
         }
+        
         if(req.body.email)  where.email = req.body.email; 
         if(req.body.cpf)  where.cpf = req.body.cpf; 
         
-        User.findOne(where)
-    	.then(function(users){
-            if(! users){
-      		    res.status(401).json({retorno:"Usuario não encontrado"});
-                return ;
-            }
-            
-            _emailRecuperacaoSenha.enviar(users._doc.email, users._doc.password);
+        user = await UserBd.findOne(where);
 
-            res.status(200).json({retorno:"Sua senha foi enviada para o e-mail cadastrado!"});
-        },function(erro){
-            res.status(401).json({retorno:erro});
-        });
+        if(!user) {
+            return R.naoAutorizado("Usuario não encontrado");
+        }
+        
+        emailRecuperacaoSenha.enviar(user.email, user.password);
+
+        return R.sucesso("Sua senha foi enviada para o e-mail cadastrado!");
     }
     
-    return controller;
+    function validarParametrosLogin(req){
+        return !( req.body.email || req.body.password);
+    }
 
+    function validarUsuario(usuario, password){
+        return (usuario && usuario.password && password && usuario.password == password);     
+    }
+    
+    function builderAutenticacao(user, userData){
+        const payload = {id: user.id};
+        const token = jwt.encode(payload, cfg.jwtSecret);
+        return {
+            token: token, 
+            user: user, 
+            userData:userData
+        }
+    }
+
+    function ehProfessor(user){
+        return user.perfil == 'PROFESSOR' || user.perfil == 'COORDENADOR' ;
+    }
+    
+    function ehAluno(user){
+        return user.perfil == 'ALUNO';
+    }
+    
+    return {login, getById, recuperarSenha};
 };

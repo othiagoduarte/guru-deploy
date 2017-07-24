@@ -1,15 +1,25 @@
 module.exports = function(app)
 {
-	var controller = app.controllers.professor;
-	var auth = app.passportGuru.authenticate();
+	const ctrl = app.controllers.professor;
+	const auth = app.passportGuru.authenticate;
 	
-	app.route('/professor')
-	.get(auth, controller.getAll)
-	.post(auth, controller.add);
-	
-	app.route('/professor/:id')
-	.get(auth, controller.get);
-	
-	app.route('/professor/getByUser/:user')
-	.get(auth, controller.getByUser);
+	app.get('/professor', async (req, res) =>{
+        const R = await ctrl.getAll(req, res);
+        res.status(R.status).jsonp(R.data);
+    });
+
+	app.post('/professor', async (req, res) =>{
+        const R = await ctrl.add(req, res);
+        res.status(R.status).jsonp(R.data);
+    });
+
+	app.get('/professor/:id', async (req, res) =>{
+        const R = await ctrl.get(req, res);
+        res.status(R.status).jsonp(R.data);
+    });
+
+	app.get('/professor/getByUser/:user', async (req, res) =>{
+        const R = await ctrl.getByUser(req, res);
+        res.status(R.status).jsonp(R.data);
+    });
 };

@@ -1,19 +1,25 @@
 module.exports = function(app)
 {
-	var auth = app.passportGuru.authenticate();
-	var controller = app.controllers.solicitacao;
+	const auth = app.passportGuru.authenticate();
+	const ctrl = app.controllers.solicitacao;
 	
-	app.route('/solicitacao/:id')
-	.get(auth ,controller.get);
-	
-	app.route('/solicitacao')
-	.get(auth, controller.getAll)
-	.post(auth,controller.validarNovaSolicitacao, controller.add)
-	.put(auth ,controller.save);
-	
-	app.route('/solicitacao/ByAluno/:idAluno')
-	.get(auth, controller.getByAluno);
+	app.post('/solicitacao', async (req, res) =>{
+        const R = await ctrl.add(req, res);
+        res.status(R.status).jsonp(R.data);
+    });
 
-	app.route('/solicitacao/ByProfessor/:idProfessor')
-	.get(auth, controller.getByProfessor);
+	app.put('/solicitacao', async (req, res) =>{
+        const R = await ctrl.save(req, res);
+        res.status(R.status).jsonp(R.data);
+    });
+
+	app.get('/solicitacao/ByAluno/:idAluno', async (req, res) =>{
+        const R = await ctrl.getByAluno(req, res);
+        res.status(R.status).jsonp(R.data);
+    });
+
+	app.get('/solicitacao/ByProfessor/:idProfessor', async (req, res) =>{
+        const R = await ctrl.getByProfessor(req, res);
+        res.status(R.status).jsonp(R.data);
+    });
 };

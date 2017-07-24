@@ -1,100 +1,65 @@
-var mongoose = require('mongoose');
-
+const mongoose = require('mongoose');
+const _ = require('underscore');
 module.exports = function(app)
 {
-	var Aluno = app.models.aluno;	
-	var Projeto = app.models.projeto;	
-		
-	var controller = {};
+	const AlunoBd = app.models.aluno;	
+	const ProjetoBd = app.models.projeto;	
+	const R = app.builder.retorno;
 	
-	controller.getAll = getAll;  
-	controller.get = get; 		
-	controller.save = save; 
-	controller.add = add;  	
-	controller.getByMatricula = getByMatricula;	
-	controller.getByUser = getByUser;
-	controller.getByOrientando = getByOrientando;
-	
-	function get (req, res) {	
-
-
-	};
-	
-	function getByMatricula (req, res) {	
-		
-		var _matricula = req.params.matricula;
-		var where = {"matricula": _matricula};
-
-		Aluno.findOne(where)
-		.then(function(alunos){
-			if(alunos){
-				res.status(200).jsonp(alunos);
-			}else{
-				res.status(404).json({retorno:"Não encontrado"});
+	async function getByMatricula (req, res) {	
+		try {
+			const where = {"matricula": req.params.matricula};
+			const retorno = await  AlunoBd.findOne(where);
+			if(!retorno){
+				return R.naoEncontrado("Não encontrado");
 			}
-
-		},function(erro){
-			res.status(404).json(erro);
-		});
-
+			return R.sucesso(retorno);
+		} catch (error) {
+			return R.erroServidor(error);
+		}
 	};
 
-	function getByUser (req, res) {	
-		
-		var _user = req.params.user;
-		var where = {"user._id": mongoose.Types.ObjectId(_user)};
-
-		Aluno.findOne(where)
-		.then(function(alunos){
-			if(alunos){
-				res.status(200).jsonp(alunos);
-			}else{
-				res.status(404).json({retorno:"Não encontrado"});
+	async function getByUser (req, res) {	
+		try {
+			const where = {"user._id": mongoose.Types.ObjectId(req.params.user)};
+			const aluno = await AlunoBd.findOne(where);
+			if(!aluno){
+				return R.naoEncontrado("Não encontrado");
 			}
-
-		},function(erro){
-			res.status(404).json(erro);
-		});
-
+			return R.sucesso(aluno);
+		} catch (error) {
+			return R.erroServidor(error)
+		}
 	};
 	
-	function getAll (req, res) {
-		Aluno.find().exec()
-		.then(function(alunos){
-			res.status(200).jsonp(alunos);
-		});
-	};
-	
-	function save(req, res){
-
+	async function getAll (req, res) {
+		try {
+			const alunos = await AlunoBd.find({});
+			return R.sucesso(alunos);
+		} catch (error) {
+			return R.erroServidor(error);
+		}
 	};
 
-	function add(req, res){
-
+	async function getByOrientando(req, res){
+		try {
+			const aggregate = {
+				$match : { "professor._id": req.params.idProfessor},
+				$unwind : "$aluno",
+				$group : { _id:null , alunos:{$addToSet:"$aluno"}},
+				$project : {_id: false, alunos: true},
+			}
+			const retorno = await ProjetoBd.aggregate(
+				{$match: aggregate.$match},
+				{$unwind: aggregate.$unwind},
+				{$group: aggregate.$group},
+				{$project: aggregate.$project}
+			);
+			return R.sucesso(retorno[0]);	
+		} catch (error) {
+			return R.erroServidor(error);			
+		}		
 	}
 
-	
-	function getByOrientando(req, res){
-		
-		var _id = req.params.idProfessor;
-
-		var $match = { "professor._id": _id};
-		var $unwind = "$aluno";
-		var $group = { _id:null , alunos:{$addToSet:"$aluno"}};
-		var $project = {_id: false, alunos: true}
-
-		Projeto.aggregate(
-			{$match: $match},
-			{$unwind:$unwind},
-			{$group:$group},
-			{$project:$project}
-		).exec()
-		.then(function(Projetos){
-			res.status(200).jsonp(Projetos[0]);
-
-		},function(error){
-			res.status(501).jsonp(error);
-		});
-	}
-	return controller;	
+	return {getByMatricula, getByOrientando, getAll, getByUser}
 };
