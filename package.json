@@ -4,7 +4,7 @@
   "description": "Guru Web - Gerenciador de TCC",
   "main": "server.js",
   "scripts": {
-    "start": "npm install && babel app -d app-compiled && node server.js",
+    "start": "babel app -d app-compiled && node server.js",
     "dev": "npm install && babel app -d app-compiled && nodemon server.js",    
     "build": "npm install && babel app -d app-compiled ",
     "lint": "eslint server.js"

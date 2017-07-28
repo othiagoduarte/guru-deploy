@@ -37,8 +37,8 @@ module.exports = function () {
 	app.passportGuru = (0, _auth2.default)(app);
 
 	app.set('host', process.env.IP || "127.0.0.1");
-	app.set('port', process.env.PORT || 3008);
-
+	app.set('port', process.env.PORT || 3000);
+	console.log(process.env.PORT);
 	app.use('/', _express2.default.static('../api/public'));
 	app.use('/download', _express2.default.static('../api/download'));
 
@@ -61,7 +61,7 @@ module.exports = function () {
 	});
 
 	(0, _expressLoad2.default)('models', { cwd: 'app' }).then('builder').then('lib').then('controllers').then('services').then('routes').into(app);
-
+console.log(app)
 	app.listen(app.get('port'), function () {
 		console.log('Node app is running on port', app.get('port'));
 	});

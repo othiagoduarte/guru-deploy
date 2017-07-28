@@ -36,7 +36,6 @@ module.exports = function (app) {
             data: validacao
         };
     }
-
+    /** */
     return { sucesso: sucesso, naoAutorizado: naoAutorizado, naoEncontrado: naoEncontrado, erroServidor: erroServidor, erroValidacao: erroValidacao };
-/* */
 };
