@@ -38,4 +38,5 @@ module.exports = function (app) {
     }
 
     return { sucesso: sucesso, naoAutorizado: naoAutorizado, naoEncontrado: naoEncontrado, erroServidor: erroServidor, erroValidacao: erroValidacao };
+/* */
 };

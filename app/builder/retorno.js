@@ -35,6 +35,6 @@ module.exports = function (app)
             data : validacao
         }
     }
-    
+    /** */
     return {sucesso, naoAutorizado, naoEncontrado, erroServidor, erroValidacao}
 }
