@@ -1,25 +1,19 @@
-import express from 'express';
-import load from 'express-load';
-import bodyParser from 'body-parser';
-import cookieParser from 'cookie-parser';
-import passport from 'passport';
-import expressSession from 'express-session';
-import auth from './auth.js';
-
-module.exports = function() {
-	
+const express = require('express');
+const load = require('express-load');
+const bodyParser = require('body-parser');
+const cookieParser = require('cookie-parser');
+const passport = require('passport');
+const expressSession = require('express-session');
+const auth = require('./auth.js');
+module.exports = function() {	
 	const app = express();
-		
 	app.passportGuru = auth(app);
 	
 	app.set('host',process.env.IP || "127.0.0.1");
 	app.set('port',process.env.PORT || 3008);
 	
-	app.use('/',express.static('../api/public'));
-	app.use('/download', express.static('../api/download'));
-	
-	app.set('view engine','ejs');
-	app.set('views','./views');
+	app.use('/', express.static('./public'));
+	app.use('/download', express.static('../download'));
 	
 	app.use(bodyParser.urlencoded({extended: true}));
 	app.use(bodyParser.json());

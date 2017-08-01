@@ -1,5 +1,10 @@
 'use strict';
 
+Object.defineProperty(exports, "__esModule", {
+	value: true
+});
+exports.default = init;
+
 var _express = require('express');
 
 var _express2 = _interopRequireDefault(_express);
@@ -30,10 +35,9 @@ var _auth2 = _interopRequireDefault(_auth);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
-module.exports = function () {
+function init() {
 
 	var app = (0, _express2.default)();
-
 	app.passportGuru = (0, _auth2.default)(app);
 
 	app.set('host', process.env.IP || "127.0.0.1");
@@ -41,9 +45,6 @@ module.exports = function () {
 
 	app.use('/', _express2.default.static('../api/public'));
 	app.use('/download', _express2.default.static('../api/download'));
-
-	app.set('view engine', 'ejs');
-	app.set('views', './views');
 
 	app.use(_bodyParser2.default.urlencoded({ extended: true }));
 	app.use(_bodyParser2.default.json());
@@ -67,4 +68,4 @@ module.exports = function () {
 	});
 
 	return app;
-};
+}
