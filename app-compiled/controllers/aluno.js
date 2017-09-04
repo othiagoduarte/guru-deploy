@@ -163,9 +163,60 @@ module.exports = function (app) {
 		};
 	}();
 
+	var add = function () {
+		var _ref5 = (0, _bluebird.coroutine)(regeneratorRuntime.mark(function _callee5(req, res) {
+			var aluno, retorno;
+			return regeneratorRuntime.wrap(function _callee5$(_context5) {
+				while (1) {
+					switch (_context5.prev = _context5.next) {
+						case 0:
+							_context5.prev = 0;
+							aluno = req.body.aluno;
+
+							aluno.apresentacao = "Cadastro incompleto";
+							_context5.next = 5;
+							return UserBd.create({
+								email: aluno.user.email,
+								password: "guru2017",
+								perfil: "ALUNO"
+							});
+
+						case 5:
+							aluno.user = _context5.sent;
+							_context5.next = 8;
+							return AlunoBd.create(aluno);
+
+						case 8:
+							retorno = _context5.sent;
+							_context5.next = 11;
+							return emailCadastro.novo(aluno.email);
+
+						case 11:
+							return _context5.abrupt('return', R.sucesso(retorno));
+
+						case 14:
+							_context5.prev = 14;
+							_context5.t0 = _context5['catch'](0);
+							return _context5.abrupt('return', R.erroServidor(_context5.t0));
+
+						case 17:
+						case 'end':
+							return _context5.stop();
+					}
+				}
+			}, _callee5, this, [[0, 14]]);
+		}));
+
+		return function add(_x9, _x10) {
+			return _ref5.apply(this, arguments);
+		};
+	}();
+
 	var AlunoBd = app.models.aluno;
 	var ProjetoBd = app.models.projeto;
+	var UserBd = app.models.user;
 	var R = app.builder.retorno;
+	var emailCadastro = app.lib.emailCadastro;
 
 	;
 
@@ -173,5 +224,5 @@ module.exports = function (app) {
 
 	;
 
-	return { getByMatricula: getByMatricula, getByOrientando: getByOrientando, getAll: getAll, getByUser: getByUser };
+	return { getByMatricula: getByMatricula, getByOrientando: getByOrientando, getAll: getAll, getByUser: getByUser, add: add };
 };

@@ -22,4 +22,9 @@ module.exports = function(app)
 		 const R = await ctrl.getByOrientando(req, res);
 		 res.status(R.status).jsonp(R.data);
 	});
+
+	app.post('/aluno', async (req, res)=>{
+		 const R = await ctrl.add(req, res);
+		 res.status(R.status).jsonp(R.data);
+	});
 };

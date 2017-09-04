@@ -118,7 +118,7 @@ module.exports = function (app) {
 						case 0:
 							_context3.prev = 0;
 							_context3.next = 3;
-							return SolicitacaoBd.find({ "professor._id": req.params.idProfessor });
+							return SolicitacaoBd.find({ "professor._id": req.params.idProfessor }).sort({ envio: -1 });
 
 						case 3:
 							solicitacoes = _context3.sent;
@@ -151,7 +151,7 @@ module.exports = function (app) {
 						case 0:
 							_context4.prev = 0;
 							_context4.next = 3;
-							return SolicitacaoBd.find({ "aluno._id": req.params.idAluno });
+							return SolicitacaoBd.find({ "aluno._id": req.params.idAluno }).sort({ envio: -1 });
 
 						case 3:
 							solicitacoes = _context4.sent;

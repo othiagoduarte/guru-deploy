@@ -13,7 +13,13 @@ module.exports = function() {
         },
         skills :[String]
         ,
-        disponivel: Boolean
+        disponivel: Boolean,
+        vagas:{
+            type:Number,
+            default:1,
+            required: true            
+        },
+        user:{}
     });
 
     return mongoose.model('Professores', schema);

@@ -1,22 +1,14 @@
 var mongoose = require('mongoose');
 
-module.exports = function(uri) {
-    
-    //var urlDatabase = 'mongodb://othiaoduarte:tds071289@ds135790/gurudb';
-    
-    var urlDatabase = 'mongodb://master:master@ds135790.mlab.com:35790/gurudb';
-    
-    uri = urlDatabase;
-  //  urlDatabase = uri ;
-    
+module.exports = function(urlDatabase) {
+    urlDatabase = urlDatabase || 'mongodb://master:master@ds135790.mlab.com:35790/gurudb';
     mongoose.connect(urlDatabase);
-    
     mongoose.connection.on('connected', function() {
-        console.log('Mongoose! Conectado em ' + uri);
+        console.log('Mongoose! Conectado em ' + urlDatabase);
     });
     
     mongoose.connection.on('disconnected', function() {
-        console.log('Mongoose! Desconectado de ' + uri);
+        console.log('Mongoose! Desconectado de ' + urlDatabase);
     });
     
     mongoose.connection.on('error', function(erro) {

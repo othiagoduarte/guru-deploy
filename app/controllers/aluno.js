@@ -4,7 +4,10 @@ module.exports = function(app)
 {
 	const AlunoBd = app.models.aluno;	
 	const ProjetoBd = app.models.projeto;	
+	const UserBd = app.models.user;		
 	const R = app.builder.retorno;
+	const emailCadastro = app.lib.emailCadastro;
+	
 	
 	async function getByMatricula (req, res) {	
 		try {
@@ -60,6 +63,23 @@ module.exports = function(app)
 			return R.erroServidor(error);			
 		}		
 	}
+	
+	async function add(req, res){
+		try {
+			const aluno = req.body.aluno;
+			aluno.apresentacao = "Cadastro incompleto";	
+			aluno.user = await UserBd.create({
+				email: aluno.user.email,
+				password: "guru2017",
+				perfil: "ALUNO"
+			});		
+			const retorno = await AlunoBd.create(aluno);
+			await emailCadastro.novo(aluno.email);
+			return R.sucesso(retorno);
+		} catch (error) {
+			return R.erroServidor(error);							
+		}
+	}
 
-	return {getByMatricula, getByOrientando, getAll, getByUser}
+	return {getByMatricula, getByOrientando, getAll, getByUser, add}
 };

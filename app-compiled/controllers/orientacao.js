@@ -112,7 +112,7 @@ module.exports = function (app) {
 						case 0:
 							_context3.prev = 0;
 							_context3.next = 3;
-							return OrientacaoBd.find({ "professor._id": req.params.idProfessor });
+							return OrientacaoBd.find({ "professor._id": req.params.idProfessor }).sort({ data: -1 });
 
 						case 3:
 							orientacoes = _context3.sent;
@@ -145,7 +145,7 @@ module.exports = function (app) {
 						case 0:
 							_context4.prev = 0;
 							_context4.next = 3;
-							return OrientacaoBd.find({ "aluno._id": req.params.idAluno });
+							return OrientacaoBd.find({ "aluno._id": req.params.idAluno }).sort({ data: -1 });
 
 						case 3:
 							orientacoes = _context4.sent;

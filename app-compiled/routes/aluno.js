@@ -119,4 +119,32 @@ module.exports = function (app) {
 			return _ref4.apply(this, arguments);
 		};
 	}());
+
+	app.post('/aluno', function () {
+		var _ref5 = (0, _bluebird.coroutine)(regeneratorRuntime.mark(function _callee5(req, res) {
+			var R;
+			return regeneratorRuntime.wrap(function _callee5$(_context5) {
+				while (1) {
+					switch (_context5.prev = _context5.next) {
+						case 0:
+							_context5.next = 2;
+							return ctrl.add(req, res);
+
+						case 2:
+							R = _context5.sent;
+
+							res.status(R.status).jsonp(R.data);
+
+						case 4:
+						case 'end':
+							return _context5.stop();
+					}
+				}
+			}, _callee5, _this);
+		}));
+
+		return function (_x9, _x10) {
+			return _ref5.apply(this, arguments);
+		};
+	}());
 };

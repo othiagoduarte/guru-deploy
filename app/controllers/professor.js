@@ -1,8 +1,10 @@
 const mongoose = require('mongoose');
 module.exports = function(app)
 {
-	const ProfessorBd = app.models.professor;		
+	const ProfessorBd = app.models.professor;	
+	const UserBd = app.models.user;			
 	const R = app.builder.retorno;
+	const emailCadastro = app.lib.emailCadastro;
 
 	async function getByUser (req, res) {	
 		try {
@@ -37,8 +39,9 @@ module.exports = function(app)
 	
 	async function save(req, res){
 		try {
-			const professor = req.body;
-			const retorno = await ProfessorBd.create(professor);
+			const professor = req.body;	
+			const query = {"_id":professor._id};
+			const retorno = await ProfessorBd.findOneAndUpdate(query, professor,{ upsert: true, new: true })
 			return R.sucesso(retorno);
 		} catch (error) {
 			return R.erroServidor(error);									
@@ -48,7 +51,13 @@ module.exports = function(app)
 	async function add(req, res){
 		try {
 			const professor = req.body;
+			professor.user = await UserBd.create({
+				email: professor.user.email,
+				password: "guru2017",
+				perfil: "PROFESSOR"
+			});		
 			const retorno = await ProfessorBd.create(professor);
+			await emailCadastro.novo(professor.email);			
 			return R.sucesso(retorno);
 		} catch (error) {
 			return R.erroServidor(error);									

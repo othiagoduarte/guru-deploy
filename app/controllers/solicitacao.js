@@ -51,7 +51,7 @@ module.exports = function(app)
 
 	async function getByProfessor(req, res){
 		try {
-			const solicitacoes =  await SolicitacaoBd.find({"professor._id":req.params.idProfessor})
+			const solicitacoes =  await SolicitacaoBd.find({"professor._id":req.params.idProfessor}).sort({envio:-1});
 			return R.sucesso(solicitacoes);	
 		} catch (error) {
 			return R.erroServidor(error);
@@ -60,7 +60,7 @@ module.exports = function(app)
 	
 	async function getByAluno(req, res){
 		try {
-			const solicitacoes =  await SolicitacaoBd.find({"aluno._id":req.params.idAluno})
+			const solicitacoes =  await SolicitacaoBd.find({"aluno._id":req.params.idAluno}).sort({envio:-1});
 			return R.sucesso(solicitacoes);	
 		} catch (error) {
 			return R.erroServidor(error);

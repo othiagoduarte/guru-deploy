@@ -42,7 +42,7 @@ module.exports = function(app)
 
 	async function getByProfessor(req, res){
 		try {
-			const orientacoes = await OrientacaoBd.find({"professor._id":req.params.idProfessor});
+			const orientacoes = await OrientacaoBd.find({"professor._id":req.params.idProfessor}).sort({data:-1});
 			return R.sucesso(orientacoes);			
 		} catch (error) {
 			return R.erroServidor(error);
@@ -51,7 +51,7 @@ module.exports = function(app)
 	
 	async function getByAluno(req, res){
 		try {
-			const orientacoes = await OrientacaoBd.find({"aluno._id":req.params.idAluno});
+			const orientacoes = await OrientacaoBd.find({"aluno._id":req.params.idAluno}).sort({data:-1});
 			return R.sucesso(orientacoes);
 		} catch (error) {
 			return R.erroServidor(error);			

@@ -13,6 +13,11 @@ module.exports = function(app)
         res.status(R.status).jsonp(R.data);
     });
 
+    app.put('/professor', async (req, res) =>{
+        const R = await ctrl.save(req, res);
+        res.status(R.status).jsonp(R.data);
+    });
+
 	app.get('/professor/:id', async (req, res) =>{
         const R = await ctrl.get(req, res);
         res.status(R.status).jsonp(R.data);

@@ -1,2 +1,2 @@
-require('./config/database.js')('mongodb://localhost/gurudb');
+require('./config/database.js')(process.env.DATA_BASE);
 require('./config/express')()

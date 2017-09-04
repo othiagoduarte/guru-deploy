@@ -115,31 +115,32 @@ module.exports = function (app) {
 
 	var save = function () {
 		var _ref4 = (0, _bluebird.coroutine)(regeneratorRuntime.mark(function _callee4(req, res) {
-			var professor, retorno;
+			var professor, query, retorno;
 			return regeneratorRuntime.wrap(function _callee4$(_context4) {
 				while (1) {
 					switch (_context4.prev = _context4.next) {
 						case 0:
 							_context4.prev = 0;
 							professor = req.body;
-							_context4.next = 4;
-							return ProfessorBd.create(professor);
+							query = { "_id": professor._id };
+							_context4.next = 5;
+							return ProfessorBd.findOneAndUpdate(query, professor, { upsert: true, new: true });
 
-						case 4:
+						case 5:
 							retorno = _context4.sent;
 							return _context4.abrupt("return", R.sucesso(retorno));
 
-						case 8:
-							_context4.prev = 8;
+						case 9:
+							_context4.prev = 9;
 							_context4.t0 = _context4["catch"](0);
 							return _context4.abrupt("return", R.erroServidor(_context4.t0));
 
-						case 11:
+						case 12:
 						case "end":
 							return _context4.stop();
 					}
 				}
-			}, _callee4, this, [[0, 8]]);
+			}, _callee4, this, [[0, 9]]);
 		}));
 
 		return function save(_x7, _x8) {
@@ -157,23 +158,36 @@ module.exports = function (app) {
 							_context5.prev = 0;
 							professor = req.body;
 							_context5.next = 4;
-							return ProfessorBd.create(professor);
+							return UserBd.create({
+								email: professor.user.email,
+								password: "guru2017",
+								perfil: "PROFESSOR"
+							});
 
 						case 4:
+							professor.user = _context5.sent;
+							_context5.next = 7;
+							return ProfessorBd.create(professor);
+
+						case 7:
 							retorno = _context5.sent;
+							_context5.next = 10;
+							return emailCadastro.novo(professor.email);
+
+						case 10:
 							return _context5.abrupt("return", R.sucesso(retorno));
 
-						case 8:
-							_context5.prev = 8;
+						case 13:
+							_context5.prev = 13;
 							_context5.t0 = _context5["catch"](0);
 							return _context5.abrupt("return", R.erroServidor(_context5.t0));
 
-						case 11:
+						case 16:
 						case "end":
 							return _context5.stop();
 					}
 				}
-			}, _callee5, this, [[0, 8]]);
+			}, _callee5, this, [[0, 13]]);
 		}));
 
 		return function add(_x9, _x10) {
@@ -182,7 +196,9 @@ module.exports = function (app) {
 	}();
 
 	var ProfessorBd = app.models.professor;
+	var UserBd = app.models.user;
 	var R = app.builder.retorno;
+	var emailCadastro = app.lib.emailCadastro;
 
 	return { getAll: getAll, get: get, save: save, add: add, getByUser: getByUser };
 };
