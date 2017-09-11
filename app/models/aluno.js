@@ -16,6 +16,9 @@ module.exports = function() {
         curso: {
             type: {}
         },
-        orientador:{}
+        orientador:{},
+        user:{
+            type: {}            
+        }
     }));
 };

@@ -24,9 +24,12 @@ module.exports = function (app) {
 
     function erroServidor(data) {
         console.log(data);
+        var erro = data ? data.toString() : "Um erro inesperado ocorreu, contate o adminstrador!";
         return {
             status: 500,
-            data: "Um erro inesperado ocorreu, contate o adminstrador!"
+            data: {
+                message: erro
+            }
         };
     }
 

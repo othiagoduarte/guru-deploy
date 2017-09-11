@@ -1,4 +1,6 @@
 const mongoose = require('mongoose');
+const _ = require('underscore');
+
 module.exports = function(app)
 {
 	const SolicitacaoBd = app.models.solicitacao;	
@@ -40,8 +42,10 @@ module.exports = function(app)
 
 	async function add(req, res){
 		try {
-			const solicitacao = req.body;
-			const retorno = await SolicitacaoBd.create(solicitacao);
+			const novaSolicitacao = req.body;
+			validarSolicitacao(novaSolicitacao);
+			await validarNovaSolicitacao(novaSolicitacao);			
+			const retorno = await SolicitacaoBd.create(novaSolicitacao);	
 			emailSolicitacao.nova(retorno.professor.user);	
 			return R.sucesso(retorno);		
 		} catch (error) {
@@ -66,6 +70,38 @@ module.exports = function(app)
 			return R.erroServidor(error);
 		}
 	}
+
+	async function validarNovaSolicitacao(novaSolicitacao){
+		const solicitacoes = await SolicitacaoBd.find({"aluno._id":novaSolicitacao.aluno._id}).sort({envio:-1});		
+		const solicitacoesEnviadas = solicitacoesStatusEnviadas(solicitacoes); 
+		if(solicitacoesEnviadas){
+			if(_.size(solicitacoesEnviadas) >= 3){
+				throw new Error("O número de solicitações enviadas excedeu o limite! Aguarde as respostas");
+			}
+			if(_.size(_.filter(solicitacoesEnviadas, item => item.professor._id == novaSolicitacao.professor._id))){
+				throw new Error(`Já existe uma solicitação de orientação enviada para o professor ${novaSolicitacao.professor.nome}! Aguarde a resposta`);				
+			}	
+		}
+	}
+
+	function solicitacoesStatusEnviadas(solicitacoes){
+		return _.filter(solicitacoes, item => item.status.cod == 'E')
+	}
+
+	function validarSolicitacao(solicitacao){
+		if(!solicitacao){
+			throw new Error("Dados da solicitação são obrigatórios");			
+		}		
+		if(!solicitacao.aluno){
+			throw new Error("Dados do aluno são obrigatórios");			
+		}
+		if(!solicitacao.professor){
+			throw new Error("Dados do professor são obrigatórios");			
+		}
+
+	}
+
+	
 
 	return {add, save, getByAluno, getByProfessor, }
 };

@@ -89,7 +89,7 @@ module.exports = function (app) {
 						case 0:
 							_context3.prev = 0;
 							_context3.next = 3;
-							return ProfessorBd.find();
+							return ProfessorBd.find({ "user.perfil": "PROFESSOR" });
 
 						case 3:
 							retorno = _context3.sent;
@@ -115,7 +115,7 @@ module.exports = function (app) {
 
 	var save = function () {
 		var _ref4 = (0, _bluebird.coroutine)(regeneratorRuntime.mark(function _callee4(req, res) {
-			var professor, query, retorno;
+			var professor, query, professorAtualizado, retorno;
 			return regeneratorRuntime.wrap(function _callee4$(_context4) {
 				while (1) {
 					switch (_context4.prev = _context4.next) {
@@ -123,24 +123,29 @@ module.exports = function (app) {
 							_context4.prev = 0;
 							professor = req.body;
 							query = { "_id": professor._id };
-							_context4.next = 5;
-							return ProfessorBd.findOneAndUpdate(query, professor, { upsert: true, new: true });
+							professorAtualizado = {
+								nome: professor.nome,
+								titulo: professor.titulo,
+								vagas: professor.vagas
+							};
+							_context4.next = 6;
+							return ProfessorBd.findOneAndUpdate(query, professorAtualizado, { upsert: true, new: true });
 
-						case 5:
+						case 6:
 							retorno = _context4.sent;
 							return _context4.abrupt("return", R.sucesso(retorno));
 
-						case 9:
-							_context4.prev = 9;
+						case 10:
+							_context4.prev = 10;
 							_context4.t0 = _context4["catch"](0);
 							return _context4.abrupt("return", R.erroServidor(_context4.t0));
 
-						case 12:
+						case 13:
 						case "end":
 							return _context4.stop();
 					}
 				}
-			}, _callee4, this, [[0, 9]]);
+			}, _callee4, this, [[0, 10]]);
 		}));
 
 		return function save(_x7, _x8) {

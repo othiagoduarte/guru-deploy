@@ -14,7 +14,7 @@ app.controller('loginCtrl', function($scope,$http,$window) {
         
         var url = "http://localhost:3008/";
      //   url = "https://guru-web.herokuapp.com/";
-        url = "http://guruweb-college.umbler.net/";
+       // url = "http://guruweb-college.umbler.net/";
         if($scope.data && $scope.data.password != "" && $scope.data.email !="" ){      
             $http.post(url + "login", $scope.data)
             .then(sucessoLogin)
@@ -29,6 +29,7 @@ app.controller('loginCtrl', function($scope,$http,$window) {
     }
 
     function sucessoLogin(res){
+      debugger;
         if(res.data.user._id){        
             $window.sessionStorage.token = res.data.token ;
             $window.sessionStorage.perfil = res.data.user.perfil;

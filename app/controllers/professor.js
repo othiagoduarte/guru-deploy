@@ -30,7 +30,7 @@ module.exports = function(app)
  	
 	async function getAll (req, res) {
 		try {
-			const retorno = await ProfessorBd.find();
+			const retorno = await ProfessorBd.find({"user.perfil":"PROFESSOR"});
 			return R.sucesso(retorno);
 		} catch (error) {
 			return R.erroServidor(error);						
@@ -41,7 +41,12 @@ module.exports = function(app)
 		try {
 			const professor = req.body;	
 			const query = {"_id":professor._id};
-			const retorno = await ProfessorBd.findOneAndUpdate(query, professor,{ upsert: true, new: true })
+			const professorAtualizado = {
+				nome:professor.nome, 
+				titulo: professor.titulo, 
+				vagas:professor.vagas			
+			}
+			const retorno = await ProfessorBd.findOneAndUpdate(query, professorAtualizado,{ upsert: true, new: true })
 			return R.sucesso(retorno);
 		} catch (error) {
 			return R.erroServidor(error);									

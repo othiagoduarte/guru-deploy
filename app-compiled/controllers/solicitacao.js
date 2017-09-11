@@ -1,8 +1,10 @@
-"use strict";
+'use strict';
 
-var _bluebird = require("bluebird");
+var _bluebird = require('bluebird');
 
 var mongoose = require('mongoose');
+var _ = require('underscore');
+
 module.exports = function (app) {
 	var save = function () {
 		var _ref = (0, _bluebird.coroutine)(regeneratorRuntime.mark(function _callee(req, res) {
@@ -48,7 +50,7 @@ module.exports = function (app) {
 							return AlunoBd.findOneAndUpdate(query, { $set: set });
 
 						case 17:
-							return _context.abrupt("return", R.sucesso(solicitacao));
+							return _context.abrupt('return', R.sucesso(solicitacao));
 
 						case 18:
 							_context.next = 23;
@@ -56,12 +58,12 @@ module.exports = function (app) {
 
 						case 20:
 							_context.prev = 20;
-							_context.t0 = _context["catch"](0);
+							_context.t0 = _context['catch'](0);
 
 							R.erroServidor(_context.t0);
 
 						case 23:
-						case "end":
+						case 'end':
 							return _context.stop();
 					}
 				}
@@ -75,33 +77,39 @@ module.exports = function (app) {
 
 	var add = function () {
 		var _ref2 = (0, _bluebird.coroutine)(regeneratorRuntime.mark(function _callee2(req, res) {
-			var solicitacao, retorno;
+			var novaSolicitacao, retorno;
 			return regeneratorRuntime.wrap(function _callee2$(_context2) {
 				while (1) {
 					switch (_context2.prev = _context2.next) {
 						case 0:
 							_context2.prev = 0;
-							solicitacao = req.body;
-							_context2.next = 4;
-							return SolicitacaoBd.create(solicitacao);
+							novaSolicitacao = req.body;
 
-						case 4:
+							validarSolicitacao(novaSolicitacao);
+							_context2.next = 5;
+							return validarNovaSolicitacao(novaSolicitacao);
+
+						case 5:
+							_context2.next = 7;
+							return SolicitacaoBd.create(novaSolicitacao);
+
+						case 7:
 							retorno = _context2.sent;
 
 							emailSolicitacao.nova(retorno.professor.user);
-							return _context2.abrupt("return", R.sucesso(retorno));
-
-						case 9:
-							_context2.prev = 9;
-							_context2.t0 = _context2["catch"](0);
-							return _context2.abrupt("return", R.erroServidor(_context2.t0));
+							return _context2.abrupt('return', R.sucesso(retorno));
 
 						case 12:
-						case "end":
+							_context2.prev = 12;
+							_context2.t0 = _context2['catch'](0);
+							return _context2.abrupt('return', R.erroServidor(_context2.t0));
+
+						case 15:
+						case 'end':
 							return _context2.stop();
 					}
 				}
-			}, _callee2, this, [[0, 9]]);
+			}, _callee2, this, [[0, 12]]);
 		}));
 
 		return function add(_x3, _x4) {
@@ -122,15 +130,15 @@ module.exports = function (app) {
 
 						case 3:
 							solicitacoes = _context3.sent;
-							return _context3.abrupt("return", R.sucesso(solicitacoes));
+							return _context3.abrupt('return', R.sucesso(solicitacoes));
 
 						case 7:
 							_context3.prev = 7;
-							_context3.t0 = _context3["catch"](0);
-							return _context3.abrupt("return", R.erroServidor(_context3.t0));
+							_context3.t0 = _context3['catch'](0);
+							return _context3.abrupt('return', R.erroServidor(_context3.t0));
 
 						case 10:
-						case "end":
+						case 'end':
 							return _context3.stop();
 					}
 				}
@@ -155,15 +163,15 @@ module.exports = function (app) {
 
 						case 3:
 							solicitacoes = _context4.sent;
-							return _context4.abrupt("return", R.sucesso(solicitacoes));
+							return _context4.abrupt('return', R.sucesso(solicitacoes));
 
 						case 7:
 							_context4.prev = 7;
-							_context4.t0 = _context4["catch"](0);
-							return _context4.abrupt("return", R.erroServidor(_context4.t0));
+							_context4.t0 = _context4['catch'](0);
+							return _context4.abrupt('return', R.erroServidor(_context4.t0));
 
 						case 10:
-						case "end":
+						case 'end':
 							return _context4.stop();
 					}
 				}
@@ -175,6 +183,55 @@ module.exports = function (app) {
 		};
 	}();
 
+	var validarNovaSolicitacao = function () {
+		var _ref5 = (0, _bluebird.coroutine)(regeneratorRuntime.mark(function _callee5(novaSolicitacao) {
+			var solicitacoes, solicitacoesEnviadas;
+			return regeneratorRuntime.wrap(function _callee5$(_context5) {
+				while (1) {
+					switch (_context5.prev = _context5.next) {
+						case 0:
+							_context5.next = 2;
+							return SolicitacaoBd.find({ "aluno._id": novaSolicitacao.aluno._id }).sort({ envio: -1 });
+
+						case 2:
+							solicitacoes = _context5.sent;
+							solicitacoesEnviadas = solicitacoesStatusEnviadas(solicitacoes);
+
+							if (!solicitacoesEnviadas) {
+								_context5.next = 9;
+								break;
+							}
+
+							if (!(_.size(solicitacoesEnviadas) >= 3)) {
+								_context5.next = 7;
+								break;
+							}
+
+							throw new Error("O número de solicitações enviadas excedeu o limite! Aguarde as respostas");
+
+						case 7:
+							if (!_.size(_.filter(solicitacoesEnviadas, function (item) {
+								return item.professor._id == novaSolicitacao.professor._id;
+							}))) {
+								_context5.next = 9;
+								break;
+							}
+
+							throw new Error('J\xE1 existe uma solicita\xE7\xE3o de orienta\xE7\xE3o enviada para o professor ' + novaSolicitacao.professor.nome + '! Aguarde a resposta');
+
+						case 9:
+						case 'end':
+							return _context5.stop();
+					}
+				}
+			}, _callee5, this);
+		}));
+
+		return function validarNovaSolicitacao(_x9) {
+			return _ref5.apply(this, arguments);
+		};
+	}();
+
 	var SolicitacaoBd = app.models.solicitacao;
 	var ProjetoBd = app.models.projeto;
 	var AlunoBd = app.models.aluno;
@@ -182,6 +239,24 @@ module.exports = function (app) {
 	var R = app.builder.retorno;
 
 	;
+
+	function solicitacoesStatusEnviadas(solicitacoes) {
+		return _.filter(solicitacoes, function (item) {
+			return item.status.cod == 'E';
+		});
+	}
+
+	function validarSolicitacao(solicitacao) {
+		if (!solicitacao) {
+			throw new Error("Dados da solicitação são obrigatórios");
+		}
+		if (!solicitacao.aluno) {
+			throw new Error("Dados do aluno são obrigatórios");
+		}
+		if (!solicitacao.professor) {
+			throw new Error("Dados do professor são obrigatórios");
+		}
+	}
 
 	return { add: add, save: save, getByAluno: getByAluno, getByProfessor: getByProfessor };
 };

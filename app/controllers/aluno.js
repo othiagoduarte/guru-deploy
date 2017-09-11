@@ -67,7 +67,6 @@ module.exports = function(app)
 	async function add(req, res){
 		try {
 			const aluno = req.body.aluno;
-			aluno.apresentacao = "Cadastro incompleto";	
 			aluno.user = await UserBd.create({
 				email: aluno.user.email,
 				password: "guru2017",

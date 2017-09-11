@@ -1,8 +1,6 @@
 var mongoose = require('mongoose');
-
 module.exports = function(urlDatabase) {
-    urlDatabase = urlDatabase || 'mongodb://master:master@ds135790.mlab.com:35790/gurudb';
-    mongoose.connect(urlDatabase);
+    mongoose.connect(urlDatabase.trim());
     mongoose.connection.on('connected', function() {
         console.log('Mongoose! Conectado em ' + urlDatabase);
     });

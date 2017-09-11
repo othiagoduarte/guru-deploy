@@ -172,39 +172,37 @@ module.exports = function (app) {
 						case 0:
 							_context5.prev = 0;
 							aluno = req.body.aluno;
-
-							aluno.apresentacao = "Cadastro incompleto";
-							_context5.next = 5;
+							_context5.next = 4;
 							return UserBd.create({
 								email: aluno.user.email,
 								password: "guru2017",
 								perfil: "ALUNO"
 							});
 
-						case 5:
+						case 4:
 							aluno.user = _context5.sent;
-							_context5.next = 8;
+							_context5.next = 7;
 							return AlunoBd.create(aluno);
 
-						case 8:
+						case 7:
 							retorno = _context5.sent;
-							_context5.next = 11;
+							_context5.next = 10;
 							return emailCadastro.novo(aluno.email);
 
-						case 11:
+						case 10:
 							return _context5.abrupt('return', R.sucesso(retorno));
 
-						case 14:
-							_context5.prev = 14;
+						case 13:
+							_context5.prev = 13;
 							_context5.t0 = _context5['catch'](0);
 							return _context5.abrupt('return', R.erroServidor(_context5.t0));
 
-						case 17:
+						case 16:
 						case 'end':
 							return _context5.stop();
 					}
 				}
-			}, _callee5, this, [[0, 14]]);
+			}, _callee5, this, [[0, 13]]);
 		}));
 
 		return function add(_x9, _x10) {
